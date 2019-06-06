@@ -158,7 +158,7 @@ app.put("/api/employee/:employeeId", (req, res) => {
 			} else {
 				if (employee != null) {
 					let obj = employee._doc;
-					//name change
+					//name change, need to change name for all DRs
 					if (obj.name !== req.body.name) {
 						if (obj.directReports.length > 0) {
 							obj.directReports.forEach(report => {
@@ -279,7 +279,7 @@ app.delete("/api/employee/:employeeId", (req, res) => {
 			if (employee !== null) {
 				let obj = employee._doc;
 				console.log(obj.manager);
-				// w/ manager
+				// current employee has manager
 				if (obj.manager !== null) {
 					Employee.findById(obj.manager, (err, manager) => {
 						if (err) {
@@ -290,13 +290,7 @@ app.delete("/api/employee/:employeeId", (req, res) => {
 								let index = newManager.directReports.indexOf(
 									req.params["employeeId"]
 								);
-								newManager.directReports = [
-									...newManager.directReports.slice(0, index),
-									...newManager.directReports.slice(
-										index + 1,
-										newManager.directReports.length
-									)
-								];
+								newManager.directReports.splice(index, 1);
 								Employee.findByIdAndUpdate(
 									obj.manager,
 									newManager,
@@ -306,7 +300,7 @@ app.delete("/api/employee/:employeeId", (req, res) => {
 										} else {
 											if (obj.directReports.length > 0) {
 												//with manager and with directReports: delete DR from manager, update reporters manager, update manager new DR
-												obj.directReports.forEach(report => {
+												obj.directReports.forEach(report => { // update reporters manager
 													Employee.findById(report, (err, employee) => {
 														if (err) {
 															res.status(500).json({ error: err });
@@ -331,7 +325,7 @@ app.delete("/api/employee/:employeeId", (req, res) => {
 														}
 													});
 												});
-												Employee.findById(obj.manager, (err, manager) => {
+												Employee.findById(obj.manager, (err, manager) => { // add employee's report to manager
 													if (err) {
 														res.status(500).json({ error: err });
 													} else {
@@ -448,21 +442,21 @@ app.get("/api/search/:key", (req, res) => {
 	);
 });
 
-// //get all manager list for add
-// app.get("/api/employee/allManagers", (req, res) => { 
-// 	Employee.find({}, (err, all) => {
-// 		if (err) {
-// 			res.status(500).json({ error: err });
-// 		} else {
-// 			res.status(200).json({
-// 				validManagers: all.map(m => {
-// 					const r = (({ name, _id }) => ({ name, _id }))(m);
-// 					return r;
-// 				})
-// 			});
-// 		}
-// 	});
-// });
+//get all manager list for add
+app.get("/api/employee/allManagers", (req, res) => { 
+	Employee.find({}, (err, all) => {
+		if (err) {
+			res.status(500).json({ error: err });
+		} else {
+			res.status(200).json({
+				validManagers: all.map(m => {
+					const r = (({ name, _id }) => ({ name, _id }))(m);
+					return r;
+				})
+			});
+		}
+	});
+});
 
 //get the valid managers: get all below dr and filter out from all manager, then we get valid manager
 app.get("/api/employee/validManagers/:emId", (req, res) => {

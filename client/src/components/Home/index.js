@@ -9,7 +9,7 @@ class Home extends Component {
   render() {
     const { employees, employeesStatus, getSearch, getEmployees, deleteEmployee, onToReset, getReporters, getManager,hasMore,page,field, setResultField, sort, setSort } = this.props;
     return (
-      <div className="main">
+      <div>
         <h2>Employees Management</h2>
         
         <Search 

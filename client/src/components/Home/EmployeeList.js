@@ -24,10 +24,10 @@ import { TableHead, TableSortLabel } from "@material-ui/core";
 // import EnhancedInfiniteScroll from "./EnhancedInfiniteScroll";
 
 const StyledTableCell = withStyles(theme => ({
-  head: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
+  // head: {
+  //   backgroundColor: theme.palette.common.black,
+  //   color: theme.palette.common.white,
+  // },
   body: {
     fontSize: 14,
     backgroundColor: theme.palette.common.white,
@@ -118,9 +118,9 @@ class EmployeesList extends Component {
     console.log(JSON.stringify(employees));
 
     return (
-      <div className="container posts-lazy-scroll">
+      <div>
         <ReduxLazyScroll
-        className="listWrap"
+          className="listWrap"
           isFetching={employeesStatus === "start"}
           
           loadMore={this.loadItems}

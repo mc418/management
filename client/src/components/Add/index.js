@@ -2,27 +2,15 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
 import * as actions from "../../redux/actions";
-
- const getBase64 = file => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-    reader.readAsDataURL(file);
-  });
-};
-class Create extends Component {
+class Add extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      avatar: "",
       name: "",
       title: "",
       startDate: "",
       sex: "M",
-      officePhone: "",
       cellPhone: "",
-      SMS: "",
       email: "",
       managerOption: "null",
       manager: null,
@@ -44,23 +32,14 @@ class Create extends Component {
 
  startDateChange = e => {
     this.setState({ startDate: e.target.value });
-     console.log(this.state.startDate);
   };
 
   sexChange = e => {
     this.setState({ sex: e.target.value });
   };
 
-  officePhoneChange = e => {
-    this.setState({ officePhone: e.target.value });
-  };
-
   cellPhoneChange = e => {
     this.setState({ cellPhone: e.target.value });
-  };
-
-  SMSChange = e => {
-    this.setState({ SMS: e.target.value });
   };
 
   emailChange = e => {
@@ -103,20 +82,6 @@ class Create extends Component {
     };
     this.props.onSave(employee);
   };
-
- 
-
-  avatarChange = (event) => {
-    event.preventDefault();
-    const file = event.target.files[0];
-      // const localImageUrl = window.URL.createObjectURL(file);
-      // console.log(localImageUrl);
-    //this.setState({ avatar: localImageUrl });
-      getBase64(file).then(base64 => {
-        this.setState({ avatar: base64 });
-      });
-     
-  }
   
   render() {
     if (this.props.redirect) {
@@ -129,22 +94,7 @@ class Create extends Component {
               <h2 className="head">New Employee</h2>
             </div>
             <div className="form-content">
-              <div className="form-right" >
-          {this.state.avatar===""?(<img className="avatar-large" src='/avatar/Default-Avatar.png' alt="avatar"/>):(<img className="avatar-large" src={this.state.avatar} alt="avatar"/>)}
-                <div>Please select a photo as avator</div>
-                <label
-                  className="upload-file"
-                  htmlFor="my-upload-btn"
-                >
-                  <input
-                    id="my-upload-btn"
-                    type="file"
-                    accept=".jpg, .jpeg, .png"
-                    onChange={this.avatarChange}
-                  />
-                </label>
-              </div>
-              <div className="form-left">
+              <div>
                 <div className="form-group row">
                   <label htmlFor="name">Name <span className="require-star">*</span>:</label>
                   <input
@@ -193,19 +143,6 @@ class Create extends Component {
                   </select>
                 </div>
                 <div className="form-group row">
-                  <label htmlFor="officePhone">Office Phone:</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="officePhone"
-                    placeholder="Office Phone"
-                    onChange={this.officePhoneChange}
-                    value={this.state.officePhone}
-                    maxLength="10"
-                    
-                  />
-                </div>
-                <div className="form-group row">
                   <label htmlFor="cellPhone">Cell Phone:</label>
                   <input
                     type="number"
@@ -231,19 +168,6 @@ class Create extends Component {
                   />
                 </div>
                 <div className="form-group row">
-                  <label htmlFor="SMS">SMS:</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="SMS"
-                    placeholder="SMS"
-                    onChange={this.SMSChange}
-                    value={this.state.SMS}
-                    maxLength="8"
-                    
-                  />
-                </div>
-                <div className="form-group row">
                   <label htmlFor="manager">Manager:</label>
                   <select
                     className="form-control"
@@ -262,7 +186,7 @@ class Create extends Component {
                       }
                   </select>
                 </div>
-          <Link to="/">
+              <Link to="/">
                 <button type="submit" className="btn btn-secondary back-btn">
                   Back
                 </button>
@@ -299,4 +223,4 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Create);
+)(Add);

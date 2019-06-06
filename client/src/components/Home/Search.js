@@ -27,7 +27,7 @@ class Search extends Component {
   render() {
     return (
       <div className="search">
-        <nav className="navbar navbar-light bg-light justify-content-between">
+        <div className="field">
           <form className="form-inline" onSubmit={this.submit}>
             <div className="form-group row">
               <input
@@ -41,13 +41,17 @@ class Search extends Component {
               />
             </div>
           </form>
-          <button type="button" className="btn btn-success push-right1" onClick={this.handleReset}>Reset Filter</button>
-          <Link to="/create">
-            <button type="button" className="btn btn-primary push-right2">
-              Add New Employee
-            </button>
-          </Link>
-        </nav>
+        </div>
+        <div className="field">
+            <button type="button" className="btn" onClick={this.handleReset}>Reset Filter</button>
+          </div>
+          <div className="field">
+            <Link to="/add">
+                <button type="button" className="btn">
+                    Add New Employee
+                </button>
+            </Link>
+          </div>
       </div>
     );
   }

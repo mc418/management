@@ -143,8 +143,7 @@ export function getValidManagers(id) {
 export function getAllManagers() {
   return (dispatch, getState) => {
     axios
-        .get(`http://localhost:8080/api/employee/validManagers/`)
-    //   .get(`http://localhost:8080/api/employee/allManagers`)
+      .get(`http://localhost:8080/api/employee/allManagers`)
       .then(response => {
         console.log()
         dispatch(getValidManagersSuccess(response.data.validManagers));

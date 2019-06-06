@@ -3,27 +3,15 @@ import { connect } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
 import * as actions from "../../redux/actions";
 
-const getBase64 = file => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-    reader.readAsDataURL(file);
-  });
-};
-
 class Edit extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      avatar: "",
       name: "",
       title: "",
       sex: "M",
       startDate: "",
-      officePhone: "",
       cellPhone: "",
-      SMS: "",
       email: "",
       managerOption: "null",
       manager: null,
@@ -37,15 +25,11 @@ class Edit extends Component {
     this.props.employees.forEach(employee => {
       if (employee._id === this.props.match.params.id) {
         this.setState({
-          avatar: employee.avatar === null ? "" : employee.avatar,
           name: employee.name,
           title: employee.title === null ? "" : employee.title,
           sex: employee.sex === null ? "M" : employee.sex,
           startDate: new Date(employee.startDate).toISOString().split('T')[0],  
-          officePhone:
-            employee.officePhone === null ? "" : employee.officePhone,
           cellPhone: employee.cellPhone === null ? "" : employee.cellPhone,
-          SMS: employee.SMS === null ? "" : employee.SMS,
           email: employee.email === null ? "" : employee.email,
           managerOption:
             employee.manager === null
@@ -75,16 +59,8 @@ class Edit extends Component {
     this.setState({ startDate: e.target.value });
   };
 
-  officePhoneChange = e => {
-    this.setState({ officePhone: e.target.value });
-  };
-
   cellPhoneChange = e => {
     this.setState({ cellPhone: e.target.value });
-  };
-
-  SMSChange = e => {
-    this.setState({ SMS: e.target.value });
   };
 
   emailChange = e => {
@@ -110,26 +86,14 @@ class Edit extends Component {
     }
   };
 
-  avatarChange = e => {
-    if (e.target.value) {
-      let file = e.target.files[0];
-      getBase64(file).then(base64 => {
-        this.setState({ avatar: base64 });
-      });
-    }
-  };
-
   onSubmit = e => {
     e.preventDefault();
     let employee = {
-      avatar: this.state.avatar,
       name: this.state.name,
       title: this.state.title,
       sex: this.state.sex,
       startDate:this.state.startDate,
-      officePhone: this.state.officePhone,
       cellPhone: this.state.cellPhone,
-      SMS: this.state.SMS,
       email: this.state.email,
       manager: this.state.manager,
       managerName: this.state.managerName
@@ -148,30 +112,6 @@ class Edit extends Component {
               <h2 className="head">Edit Employee</h2>
             </div>
             <div className="form-content">
-              <div className="form-right">
-                {this.state.avatar === "" ? (
-                  <img
-                    className="avatar-large"
-                    src="/avatar/Default-Avatar.png"
-                    alt="avatar"
-                  />
-                ) : (
-                  <img
-                    className="avatar-large"
-                    src={this.state.avatar}
-                    alt="avatar"
-                  />
-                )}
-                <div>Please select a photo as avator</div>
-                <label className="upload-file" htmlFor="my-upload-btn">
-                  <input
-                    id="my-upload-btn"
-                    type="file"
-                    accept=".jpg, .jpeg, .png"
-                    onChange={this.avatarChange}
-                  />
-                </label>
-              </div>
               <div className="form-left">
                 <div className="form-group row">
                   <label htmlFor="name">Name<span className="require-star">*</span>:</label>
@@ -221,18 +161,6 @@ class Edit extends Component {
                   />
                 </div>
                 <div className="form-group row">
-                  <label htmlFor="officePhone">Office Phone:</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="officePhone"
-                    placeholder="Office Phone"
-                    onChange={this.officePhoneChange}
-                    value={this.state.officePhone}
-                    maxLength="10"
-                  />
-                </div>
-                <div className="form-group row">
                   <label htmlFor="cellPhone">Cell Phone:</label>
                   <input
                     type="number"
@@ -253,18 +181,6 @@ class Edit extends Component {
                     placeholder="Email"
                     onChange={this.emailChange}
                     value={this.state.email}
-                  />
-                </div>
-                <div className="form-group row">
-                  <label htmlFor="SMS">SMS:</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="SMS"
-                    placeholder="SMS"
-                    onChange={this.SMSChange}
-                    value={this.state.SMS}
-                    maxLength="8"
                   />
                 </div>
                 <div className="form-group row">

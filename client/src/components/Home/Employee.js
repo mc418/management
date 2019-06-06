@@ -109,9 +109,6 @@ const Employee = props => {
             <IconButton
               aria-label="Edit"
               color="primary"
-              // onClick={() =>
-              //   this.handleEditEmployee(props.employee._id)
-              // }
             >
             <Link to={{ pathname: `/edit/${props.employee._id}` }}>
               <EditIcon />
@@ -133,48 +130,6 @@ const Employee = props => {
           </Tooltip>
         </TableCell>
       </StyledTableRow>
-    // <li>
-    //   <span>{props.employee.avatar===null||props.employee.avatar===""?null:<img className="avatar-small" src={props.employee.avatar} alt="avatar"/>}</span>
-    //   <span>{props.employee.name}</span>
-    //   <span>{props.employee.title}</span>
-    //   <span>{props.employee.sex}</span>
-    //   <span>{date}</span>
-    //   <span>{props.employee.officePhone===null||props.employee.officePhone===""?null:(<a href={"skype:"+props.employee.officePhone+"?call"}>{props.employee.officePhone}</a>)}</span>
-    //   <span>{props.employee.cellPhone}</span>
-    //   <span>{props.employee.SMS}</span>
-    //   <span>{props.employee.email===null||props.employee.email===""?null:(<a href={"mailto:"+props.employee.email}>{props.employee.email}</a>)}</span>
-    //   <span>
-    //     {props.employee.managerName === null ? null : (
-    //       <button className="btn btn-link" onClick={props.employeeManager}>{props.employee.managerName}</button>
-    //     )}
-    //   </span>
-    //   <span>
-    //     {props.employee.directReports.length === 0 ? (
-    //       0
-    //     ) : (
-    //       <button className="btn btn-link" onClick={props.employeeReporters}>
-    //         {props.employee.directReports.length}
-    //       </button>
-    //     )}
-    //   </span>
-    //   <span>
-    //     <Link to={{ pathname: `/edit/${props.employee._id}` }}>
-    //       <button type="button" className="btn btn-light">
-    //         <img className="icon" src="./icon/edit.png" alt="icon" />
-    //       </button>
-    //     </Link>
-    //   </span>
-    //   <span>
-    //     <button
-    //       type="button"
-    //       className="btn btn-light"
-    //       id={props.employee._id}
-    //       onClick={props.employeeDelete}
-    //     >
-    //       <img className="icon" src="./icon/delete.png" alt="icon" />
-    //     </button>
-    //   </span>
-    // </li>
   );
 };
 

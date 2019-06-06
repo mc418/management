@@ -9,9 +9,9 @@ class App extends Component {
   render() {
     return (
       <BrowserRouter>
-        <div className="wrapper">
+        <div>
           <Route path="/" exact={true} component={Home} />
-          <Route path="/create" component={Add} />
+          <Route path="/add" component={Add} />
                   <Route path="/edit/:id" component={Edit} />
         </div>
       </BrowserRouter>
