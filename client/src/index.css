@@ -1,7 +1,21 @@
 body {
-  font-family: Verdana, Geneva, sans-serif;
+  font-family: Georgia, 'Times New Roman', Times, serif;
    font-size: 9pt;
    width: 100%;
+}
+
+h2 {
+  font-size: 30px;
+  margin-left: 10px;
+  color:rgb(94, 120, 226);
+}
+
+input {
+  padding: 8px;
+}
+
+.button {
+  background-color: rgb(94, 120, 226);
 }
 
 .icon{
@@ -31,6 +45,16 @@ body {
   font-size: 9pt;
   background: none;
   border: none;
+}
+
+.homeBtn {
+  background-color: rgb(94, 120, 226);
+  border: none;
+  color: #f6f6f6;
+  padding: 8px;
+  margin-top: 10px;
+  margin-right: 5px;
+  border-radius: 5px;
 }
 
 .edit-employee, .create-employee{

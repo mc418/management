@@ -1,14 +1,43 @@
 import axios from "axios";
 
-export function getEmployees(page=1) {
-  return (dispatch, getState) => {
-    //set redirect to false everytime we return to home page
-    dispatch(redirect(false));
-    dispatch(getEmployeesStart(page));
-    axios
-      .get("http://localhost:8080/api/employees/"+page)
+// GET EMPLOYEES
+function getEmployeesStart() {
+  return {
+    type: "FETCH_EMPLOYEES_START",
+  };
+}
+
+
+function getEmployeesSuccess(page, response) {
+  return {
+    type: "FETCH_EMPLOYEES_SUCCESS",
+    employees: response,
+    hasMore: response.length > 0,
+    page: page
+  };
+}
+
+function getEmployeesFail(err) {
+  return {
+    type: "FETCH_EMPLOYEES_FAIL",
+    error: err
+  };
+}
+
+export function getEmployees(page, order, orderBy, search) {
+  return (dispatch) => {
+    dispatch(getEmployeesStart());
+    axios({
+      method: 'get', 
+      url: "http://localhost:8080/api/employees?"+
+            "order=" + order + "&&" +
+            "orderBy=" + orderBy + "&&" +
+            "page=" + page + "&&" + 
+            "search=" + search
+    })
       .then(response => {
-        dispatch(getEmployeesSuccess(response.data.employee.docs));
+        dispatch(getEmployeesSuccess(page, response.data.employee.docs));
+        console.log(response);
       })
       .catch(err => {
         dispatch(getEmployeesFail(err));
@@ -16,191 +45,189 @@ export function getEmployees(page=1) {
   };
 }
 
-export function addEmployee(employee) {
-  return (dispatch, getState) => {
-    dispatch(redirect(false));
-    dispatch(reset(true));//empty the past data in employees store
+// ADD EMPLOYEE
+function addEmployeeStart() {
+  return {
+    type: "ADD_EMPLOYEE_START"
+  };
+}
+
+function addEmployeeSuccess(response) {
+  return {
+    type: "ADD_EMPLOYEE_SUCCESS"
+  }
+}
+
+function addEmployeeFail(err) {
+  return {
+    type: "ADD_EMPLOYEE_FAIL",
+    error: err
+  };
+}
+
+export function addEmployee(employee, ownProps) {
+  return (dispatch) => {
+    dispatch(reset());//empty the past data in employees store
+    dispatch(addEmployeeStart());
     axios
       .post("http://localhost:8080/api/employee", employee)
       .then(response => {
-        dispatch(redirect(true));
-        dispatch(setResultField("getEmployees"));
+        dispatch(addEmployeeSuccess(response));
+        ownProps.history.push('/');
       })
       .catch(err => {
-        dispatch(redirect(false));
+        dispatch(addEmployeeFail(err));
       });
   };
 }
 
-export function editEmployee(id, employee) {
-  return (dispatch, getState) => {
-    dispatch(redirect(false));
-    dispatch(reset(true));//empty the past data in employees store
+// EDIT EMPLOYEE
+function editEmployeeStart() {
+  return {
+    type: "EDIT_EMPLOYEE_START"
+  };
+}
+
+function editEmployeeSuccess() {
+  return {
+    type: "EDIT_EMPLOYEE_SUCCESS"
+  };
+}
+
+function editEmployeeFail(err) {
+  return {
+    type: "EDIT_EMPLOYEE_FAIL",
+    error: err
+  };
+}
+
+export function editEmployee(id, employee, ownProps) {
+  return (dispatch) => {
+    dispatch(reset());//empty the past data in employees store
+    dispatch(editEmployeeStart());
     axios
       .put(`http://localhost:8080/api/employee/${id}`, employee)
       .then(response => {
-        dispatch(redirect(true));
-        dispatch(setResultField("getEmployees"));
+        dispatch(editEmployeeSuccess(response))
+        ownProps.history.push('/');
       })
       .catch(err => {
-        dispatch(redirect(false));
+        dispatch(editEmployeeFail(err));
       });
+  };
+}
+
+// DELETE EMPLOYEE
+function deleteEmployeeStart() {
+  return {
+    type: "DELETE_EMPLOYEE_START"
+  };
+}
+
+function deleteEmployeeSuccess() {
+  return {
+    type: "DELETE_EMPLOYEE_SUCCESS"
+  };
+}
+
+function deleteEmployeeFail(err) {
+  return {
+    type: "DELETE_EMPLOYEE_FAIL",
+    error: err
   };
 }
 
 export function deleteEmployee(id) {
-  return (dispatch, getState) => {
-    dispatch(getEmployeesStart());
-    dispatch(setResultField("getEmployees"));
-    dispatch(reset(true));//empty the past data in employees store
+  return (dispatch) => {
+    dispatch(deleteEmployeeStart());
     axios
       .delete(`http://localhost:8080/api/employee/${id}`)
       .then(response => {
-        //dispatch(getEmployeesSuccess(response.data.employee));
-        dispatch(getEmployees(1));
+        dispatch(deleteEmployeeSuccess(response));
+        console.log(1);
       })
       .catch(err => {
-        console.log(err);
-        dispatch(getEmployeesFail());
+        dispatch(deleteEmployeeFail(err))
       });
   };
 }
 
-export function getSearch(key) {
-  if(key===""||key===null){
-        return dispatch =>{
-            dispatch(setResultField("getEmployees"));//change back show all employees
-            dispatch(reset(true));//empty the past data in employees store
-        }
-  }
-  const url = "http://localhost:8080/api/search/" + key;
-  return dispatch => {
-    dispatch(getEmployeesStart());
-    dispatch(setResultField("search"));//change to fetch search result
-    dispatch(reset(true));//empty the past data in employees store
-    axios
-      .get(url)
-      .then(response => {
-        //console.log(response.data);
-        dispatch(getEmployeesSuccess(response.data));
-        dispatch(reset(false));
-      })
-      .catch(err => {
-        console.log(err);
-        dispatch(getEmployeesFail());
-      });
+// GET REPORTERS
+function getReportersStart() {
+  return {
+    type: "GET_REPORTERS_START"
+  };
+}
+
+function getReportersSuccess(response) {
+  return {
+    type: "GET_REPORTERS_SUCCESS",
+    employees: response,
+    hasMore: response.length > 0
+  };
+}
+
+function getReportersFail(err) {
+  return {
+    type: "GET_REPORTERS_FAIL",
+    error: err
   };
 }
 
 export function getReporters(id) {
-  return (dispatch, getState) => {
-    dispatch(getEmployeesStart());
-    dispatch(setResultField("getReporters"));
-    dispatch(reset(true));//empty the past data in employees store
+  return (dispatch) => {
+    dispatch(getReportersStart());
     axios
       .get(`http://localhost:8080/api/employee/reporters/${id}`)
       .then(response => {
-        dispatch(getEmployeesSuccess(response.data.reporters));
+        dispatch(getReportersSuccess(response.data.reporters))
       })
       .catch(err => {
-        dispatch(getEmployeesFail());
+        dispatch(getReportersFail(err));
       });
+  };
+}
+
+// GET MANAGER
+function getManagerStart() {
+  return {
+    type: "GET_MANAGER_START"
+  };
+}
+
+function getManagerSuccess(response) {
+  return {
+    type: "GET_MANAGER_SUCCESS",
+    employees: response,
+    hasMore: response.length > 0
+  };
+}
+
+function getManagerFail(err) {
+  return {
+    type: "GET_MANAGER_FAIL",
+    error: err
   };
 }
 
 export function getManager(id) {
-  return (dispatch, getState) => {
-    dispatch(getEmployeesStart());
-    dispatch(setResultField("getManager"));
-    dispatch(reset(true));//empty the past data in employees store
+  return (dispatch) => {
+    dispatch(getManagerStart());
     axios
       .get(`http://localhost:8080/api/employee/manager/${id}`)
       .then(response => {
-        dispatch(getEmployeesSuccess(response.data.manager));
+        dispatch(getManagerSuccess(response.data.manager))
       })
       .catch(err => {
-        dispatch(getEmployeesFail());
+        dispatch(getManagerFail(err));
       });
   };
 }
 
-//for edit manager list
-export function getValidManagers(id) {
-  return (dispatch, getState) => {
-    axios
-      .get(`http://localhost:8080/api/employee/validManagers/${id}`)
-      .then(response => {
-        console.log()
-        dispatch(getValidManagersSuccess(response.data.validManagers));
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }
-}
-
-//for add manager list
-export function getAllManagers() {
-  return (dispatch, getState) => {
-    axios
-      .get(`http://localhost:8080/api/employee/allManagers`)
-      .then(response => {
-        console.log()
-        dispatch(getValidManagersSuccess(response.data.validManagers));
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }
-}
-
-export function reset(value) {
+// GET VALID MANAGERS
+function getValidManagersStart() {
   return {
-    type: "RESET",
-    value: value
-  };
-}
-
-export function setResultField(field) {
-  return {
-    type: "CHANGE_FIELD",
-    field: field
-  };
-}
-
-export function setSort(sort) {
-  return {
-    type: "CHANGE_SORT",
-    sort: sort
-  };
-}
-
-//for redirect after add and edit
-function redirect(value) {
-  return {
-    type: "REDIRECT",
-    value: value
-  };
-}
-
-function getEmployeesStart(page) {
-  return {
-    type: "FETCH_EMPLOYEES_START",
-    page: page+1
-  };
-}
-
-function getEmployeesFail() {
-  return {
-    type: "FETCH_EMPLOYEES_FAIL"
-  };
-}
-
-function getEmployeesSuccess(response) {
-  return {
-    type: "FETCH_EMPLOYEES_SUCCESS",
-    employees: response,
-    hasMore: response.length>0
+    type: "FETCH_VALID_MANAGERS_START"
   };
 }
 
@@ -210,3 +237,76 @@ function getValidManagersSuccess(response) {
     validManagers: response
   };
 }
+
+function getValidManagersFail(err) {
+  return {
+    type: "FETCH_VALID_MANAGERS_FAIL",
+    error: err
+  };
+}
+
+export function getValidManagers(id) {
+  return (dispatch) => {
+    dispatch(getValidManagersStart());
+    axios
+      .get(`http://localhost:8080/api/employee/validManagers/${id}`)
+      .then(response => {
+        dispatch(getValidManagersSuccess(response.data.validManagers));
+      })
+      .catch(err => {
+        dispatch(getValidManagersFail(err));
+      });
+  }
+}
+
+// GET ALL MANAGERS
+function getAllManagersStart() {
+  return {
+    type: "FETCH_ALL_MANAGERS_START"
+  };
+}
+
+function getAllManagersSuccess(response) {
+  return {
+    type: "FETCH_ALL_MANAGERS_SUCCESS",
+    allManagers: response
+  };
+}
+
+function getAllManagersFail(err) {
+  return {
+    type: "FETCH_ALL_MANAGERS_FAIL",
+    error: err
+  };
+}
+
+export function getAllManagers() {
+  return (dispatch) => {
+    dispatch(getAllManagersStart());
+    axios
+      .get(`http://localhost:8080/api/employee/allManagers`)
+      .then(response => {
+        dispatch(getAllManagersSuccess(response.data.validManagers));
+      })
+      .catch(err => {
+        dispatch(getAllManagersFail(err))
+      });
+  }
+}
+
+// CLEAR EMPLOYEES IN STORE
+export function reset() {
+  return {
+    type: "RESET",
+  };
+}
+
+// CHANGE RESULT FIELD
+// export function setResultField(field) {
+//   return {
+//     type: "CHANGE_FIELD",
+//     field: field
+//   };
+// }
+
+

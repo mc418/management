@@ -36,23 +36,46 @@ app.use(bodyParser.json());
 app.use(logger("dev"));
 
 
-// get list of employees
-app.get("/api/employees/:page", (req, res) => {
+// LOAD EMPLOYEES
+app.get("/api/employees?", (req, res) => {
+	const { page, orderBy, search } = req.query;
+	console.log(req.query);
+	const order = req.query.order === "asc" ? 1 : -1;
+	
 	let options = {
-		page: parseInt(req.params.page),
-		limit: 5
-		//sort: { lastname: req.params.seq }
+		sort: {
+			[orderBy]: order
+		},
+		page: parseInt(page),
+		limit: 15
 	};
-	Employee.paginate({}, options, (err, employee) => {
+
+	let query = {};
+	
+	query = {
+		$or: [
+			{ name: new RegExp(search, "i") },
+			{ title: new RegExp(search, "i") },
+			{ cellPhone: new RegExp(search, "i") },
+			{ email: new RegExp(search, "i") },
+			{ managerName: new RegExp(search, "i") }
+		]
+	};
+
+
+	Employee.paginate(query, options, (err, employee) => {
 		if (err) {
 			res.status(500).json({ error: err });
 		} else {
 			res.status(200).json({ employee });
 		}
+		console.log(employee);
 	});
+
 });
 
-// get an employee reporters details
+
+// LOAD REPORTERS
 app.get("/api/employee/reporters/:employeeId", (req, res) => {
 	Employee.findById(req.params["employeeId"], (err, employee) => {
 		if (err) {
@@ -72,14 +95,13 @@ app.get("/api/employee/reporters/:employeeId", (req, res) => {
 	});
 });
 
-// get an employee manager details
+// LOAD MANAGERS
 app.get("/api/employee/manager/:employeeId", (req, res) => {
 	Employee.findById(req.params["employeeId"], (err, employee) => {
 		if (err) {
 			res.status(500).json({ error: err });
 		} else {
 			let manager = employee.manager.toString();
-			//console.log(typeof manager)
 			Employee.find({}, (err, all) => {
 				if (err) {
 					res.status(500).json({ error: err });
@@ -93,7 +115,7 @@ app.get("/api/employee/manager/:employeeId", (req, res) => {
 	});
 });
 
-// add a new employee
+// ADD NEW EMPLOYEE
 app.post("/api/employee", (req, res) => {
 	if (!req.body.manager) {
 		Employee.create(req.body, (err, employee) => {
@@ -147,7 +169,7 @@ app.post("/api/employee", (req, res) => {
 	}
 });
 
-// modify an exist employee
+// EDIT EMPLOYEE
 app.put("/api/employee/:employeeId", (req, res) => {
 	Employee.findByIdAndUpdate(
 		req.params["employeeId"],
@@ -164,7 +186,6 @@ app.put("/api/employee/:employeeId", (req, res) => {
 							obj.directReports.forEach(report => {
 								Employee.findById(report, (err, employee) => {
 									if (err) {
-										console.log(err);
 										res.status(500).json({ error: err });
 									} else {
 										if (employee !== null) {
@@ -270,7 +291,7 @@ app.put("/api/employee/:employeeId", (req, res) => {
 	);
 });
 
-// delete an exist employee
+// DELETE EMPLOYEE
 app.delete("/api/employee/:employeeId", (req, res) => {
 	Employee.findByIdAndRemove(req.params["employeeId"], (err, employee) => {
 		if (err) {
@@ -278,7 +299,6 @@ app.delete("/api/employee/:employeeId", (req, res) => {
 		} else {
 			if (employee !== null) {
 				let obj = employee._doc;
-				console.log(obj.manager);
 				// current employee has manager
 				if (obj.manager !== null) {
 					Employee.findById(obj.manager, (err, manager) => {
@@ -380,7 +400,6 @@ app.delete("/api/employee/:employeeId", (req, res) => {
 						}
 					});
 				} else {
-					console.log(obj.directReports.length);
 					//without manager but with DR: set reporters manager to null
 					if (obj.directReports.length > 0) {
 						obj.directReports.forEach(report => {
@@ -422,7 +441,7 @@ app.delete("/api/employee/:employeeId", (req, res) => {
 	});
 });
 
-// get the results match the key(accessed at GET http://localhost:8080/api/search/:key)
+// SEARCH EMPLOYEE
 app.get("/api/search/:key", (req, res) => {
 	var query = req.params.key.replace(" ", "|");
 	var regex = new RegExp(query, "i"); // 'i' makes it case insensitive
@@ -442,7 +461,7 @@ app.get("/api/search/:key", (req, res) => {
 	);
 });
 
-//get all manager list for add
+// LOAD ALL MANAGERS
 app.get("/api/employee/allManagers", (req, res) => { 
 	Employee.find({}, (err, all) => {
 		if (err) {
@@ -458,7 +477,7 @@ app.get("/api/employee/allManagers", (req, res) => {
 	});
 });
 
-//get the valid managers: get all below dr and filter out from all manager, then we get valid manager
+// LOAD VALID MANAGERS
 app.get("/api/employee/validManagers/:emId", (req, res) => {
 	Employee.aggregate(
 		[
@@ -480,9 +499,7 @@ app.get("/api/employee/validManagers/:emId", (req, res) => {
 		],
 		(err, results) => {
 			if (err) res.status(500).send(err);
-
 			let self = results[0]._id.toString();
-			//haoconsole.log(self);
 			let notValid = results[0].drChain.map(dr => dr.toString());
 			Employee.find({}, (err, all) => {
 				if (err) {

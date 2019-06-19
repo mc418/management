@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Link, Redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 import * as actions from "../../redux/actions";
 
 class Edit extends Component {
@@ -102,9 +102,6 @@ class Edit extends Component {
   };
 
   render() {
-    if (this.props.redirect) {
-      return <Redirect to={{ pathname: "/" }} />;
-    } else {
       return (
         <div className="edit-employee">
           <form className="myForm" onSubmit={this.onSubmit}>
@@ -217,21 +214,19 @@ class Edit extends Component {
         </div>
       );
     }
-  }
 }
 
 const mapStateToProps = state => {
   return {
     employees: state.employees,
-    redirect: state.redirect,
     validManagers: state.validManagers
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     onSave: (id, employee) => {
-      dispatch(actions.editEmployee(id, employee));
+      dispatch(actions.editEmployee(id, employee, ownProps));
     },
     getValidManagers: (id) => {
       dispatch(actions.getValidManagers(id));
