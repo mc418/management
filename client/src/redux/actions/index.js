@@ -301,12 +301,5 @@ export function reset() {
   };
 }
 
-// CHANGE RESULT FIELD
-// export function setResultField(field) {
-//   return {
-//     type: "CHANGE_FIELD",
-//     field: field
-//   };
-// }
 
 

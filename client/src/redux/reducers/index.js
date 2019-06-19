@@ -2,7 +2,6 @@ const InitState = {
     employees: [],
     employeesStatus: "",
     hasMore: true,
-    resultField:"getEmployees",
     validManagers:[],
     error: null
   };
@@ -45,8 +44,7 @@ const InitState = {
         return {
           ...state,
           employees: [],
-          hasMore: true,
-          resultField: "getEmployees"
+          hasMore: true
         }
       case "EDIT_EMPLOYEE_FAIL":
         return {
@@ -61,8 +59,7 @@ const InitState = {
         return {
           ...state,
           employees: [],
-          hasMore: true,
-          resultField: "getEmployees"
+          hasMore: true
         }
       case "ADD_EMPLOYEE_FAIL":
         return {
@@ -84,22 +81,6 @@ const InitState = {
           ...state,
           error: action.error
         }
-      case "SEARCH_EMPLOYEE_START":
-        return {
-          ...state
-        }
-      case "SEARCH_EMPLOYEE_SUCCESS":
-        return {
-          ...state,
-          employees: action.employees,
-          hasMore: true,
-          resultField: "search"
-        }
-      case "SEARCH_EMPLOYEE_FAIL":
-        return {
-          ...state,
-          error: action.error
-      }
       case "GET_REPORTERS_START":
         return {
           ...state
@@ -108,8 +89,7 @@ const InitState = {
         return {
           ...state,
           employees: action.employees,
-          hasMore: true,
-          resultField: "getReporters"
+          hasMore: true
         }
       case "GET_REPORTERS_FAIL":
         return {
@@ -124,8 +104,7 @@ const InitState = {
         return {
           ...state,
           employees: action.employees,
-          hasMore: true,
-          resultField: "getManager"
+          hasMore: true
         }
       case "GET_MANAGER_FAIL":
         return {
@@ -136,14 +115,8 @@ const InitState = {
         return { 
           ...state, 
           employees: [], 
-          hasMore:true, 
-          resultField: "getEmployees"
+          hasMore:true
         }
-      // case "CHANGE_FIELD":
-      //   return { 
-      //     ...state, 
-      //     resultField: action.field
-      //   };
       case "FETCH_VALID_MANAGERS_START":
         return {
           ...state

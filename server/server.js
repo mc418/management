@@ -12,7 +12,6 @@ const app = express();
 app.use(cors());
 const router = express.Router();
 
-
 // this is our MongoDB database
 const dbRoute = "mongodb+srv://mc-418:I!mokay418@cluster0-lwts0.mongodb.net/test?retryWrites=true";
 

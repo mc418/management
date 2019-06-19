@@ -17,11 +17,17 @@ const StyledTableRow = withStyles(theme => ({
   },
 }))(TableRow);
 
-
 const Employee = props => {
   let date = props.employee.startDate.substr(0,10);
   return (
     <StyledTableRow hover tabIndex={-1} key={props.employee._id}>
+        <TableCell>
+        {props.employee.avatar===null||props.employee.avatar===""
+          ?
+          null
+          :
+        <img className="avatar-small" src={props.employee.avatar} alt="avatar"/>}
+        </TableCell>
         <TableCell>
           {props.employee.name}
         </TableCell>

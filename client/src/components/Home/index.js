@@ -135,12 +135,9 @@ class Home extends Component {
       employeesStatus, 
       getReporters, 
       getManager,
-      hasMore,
-      // field, 
-      // setResultField, 
-      // sort, 
-      // setSort 
+      hasMore
     } = this.props;
+    
     const { pageStart, initialLoad, order, orderBy } = this.state;
     return (
       <div>
@@ -184,6 +181,11 @@ class Home extends Component {
             <Table aria-labelledby="tableTitle">
                 <TableHead>
                   <StyledTableRow>
+                      <StyledTableCell
+                        style={{fontSize: "14px"}}
+                      >
+                        Avatar
+                      </StyledTableCell>
                         <StyledTableCell
                           style={{fontSize: "14px"}}
                         >
@@ -330,7 +332,6 @@ const mapStateToProps = state => {
     employees: state.employees,
     employeesStatus: state.employeesStatus,
     hasMore: state.hasMore,
-    // field: state.resultField,
   };
 };
 

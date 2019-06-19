@@ -2,10 +2,22 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import * as actions from "../../redux/actions";
+import img from "../data/img";
+
+const getBase64 = file => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+    reader.readAsDataURL(file);
+  });
+};
+
 class Add extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      avatar: "",
       name: "",
       title: "",
       startDate: "",
@@ -21,6 +33,15 @@ class Add extends Component {
   componentDidMount() {
     this.props.getAllManagers();
   }
+
+  avatarChange = e => {
+    if (e.target.value) {
+      let file = e.target.files[0];
+      getBase64(file).then(base64 => {
+        this.setState({ avatar: base64 });
+      });
+    }
+  };
 
   nameChange = e => {
     this.setState({ name: e.target.value });
@@ -73,9 +94,7 @@ class Add extends Component {
       title: this.state.title,
       startDate: this.state.startDate,
       sex: this.state.sex,
-      officePhone: this.state.officePhone,
       cellPhone: this.state.cellPhone,
-      SMS: this.state.SMS,
       email: this.state.email,
       manager: this.state.manager,
       managerName: this.state.managerName
@@ -91,6 +110,27 @@ class Add extends Component {
               <h2 className="head">New Employee</h2>
             </div>
             <div className="form-content">
+            <div className="form-right" >
+              {this.state.avatar===""
+              ?
+              <img className="avatar-large" src={img} alt="avatar"/>
+              :
+              <img className="avatar-large" src={this.state.avatar} alt="avatar"/>
+              }
+                <div>Please select a photo as avator</div>
+                <label
+                  className="upload-file"
+                  htmlFor="my-upload-btn"
+                >
+                  <input
+                    id="my-upload-btn"
+                    type="file"
+                    accept=".jpg, .jpeg, .png"
+                    onChange={this.avatarChange}
+                  />
+                </label>
+              </div>
+
               <div>
                 <div className="form-group row">
                   <label htmlFor="name">Name <span className="require-star">*</span>:</label>
