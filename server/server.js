@@ -440,26 +440,6 @@ app.delete("/api/employee/:employeeId", (req, res) => {
 	});
 });
 
-// SEARCH EMPLOYEE
-app.get("/api/search/:key", (req, res) => {
-	var query = req.params.key.replace(" ", "|");
-	var regex = new RegExp(query, "i"); // 'i' makes it case insensitive
-	Employee.find(
-		{
-			$or: [
-				{ name: regex },
-				{ title: regex },
-				{ sex: regex },
-				{ managerName: regex }
-			]
-		},
-		function(err, results) {
-			if (err) res.status(500).send(err);
-			res.status(200).json(results);
-		}
-	);
-});
-
 // LOAD ALL MANAGERS
 app.get("/api/employee/allManagers", (req, res) => { 
 	Employee.find({}, (err, all) => {

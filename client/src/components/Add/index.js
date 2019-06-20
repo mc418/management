@@ -17,7 +17,7 @@ class Add extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      avatar: "",
+      avatar: img,
       name: "",
       title: "",
       startDate: "",

@@ -74,48 +74,35 @@ class Home extends Component {
           page: 0
         },
         () => {
-          console.log("handle sort: ", this.state.order, this.state.orderBy);
           this.props.onToReset();
         }
       );
   };
 
+
   handleDelete = id => {
-     const job1 = () => {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve(this.props.deleteEmployee(id));
-        }, 1000);
-      });
+    const func1 = () => {
+      return new Promise(resolve => {
+        resolve(this.props.deleteEmployee(id));
+      })
     }
 
-    const job2 = () => {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve(this.setState({ 
-            pageStart: this.state.pageStart === 0 ? -1 : 0,
-            initialLoad: true,
-            page: 0
-            }));
-        }, 1000);
-      });
+    const func2 = () => {
+      return new Promise(resolve => {
+        resolve(this.setState({
+          pageStart: this.state.pageStart === 0 ? -1 : 0,
+          initialLoad: true,
+          page: 0
+        }))
+      })
     }
 
-    const job3 = () =>  {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve(this.props.onToReset());
-        }, 1000);
-      });
+    async function SerialFlow() {
+      let res1 = await func1();
+      let res2 = await func2();
+      return;
     }
-
-    job1().then(() => {
-      console.log(2);
-      return job2();
-    }).then(() => {
-      console.log(3);
-      return job3();
-    });
+    SerialFlow();    
   };
 
   loadItems = () => {
@@ -144,10 +131,10 @@ class Home extends Component {
         <h2>Employee Management System</h2>
         <div className="search">
           <div className="field">
-            <form className="form-inline">
-              <div className="form-group row">
+          <form>
+              <div className="form-group">
                 <input
-                  className="form-control mr-sm-2"
+                  className="form-control"
                   type="search"
                   id="search"
                   placeholder="Search"
