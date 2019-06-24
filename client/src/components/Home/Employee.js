@@ -26,7 +26,12 @@ const Employee = props => {
           ?
           null
           :
-        <img className="avatar-small" src={props.employee.avatar} alt="avatar"/>}
+          <img 
+            className="avatar-small" 
+            src={props.employee.avatar} 
+            alt="avatar"
+          />
+        }
         </TableCell>
         <TableCell>
           {props.employee.name}
@@ -51,22 +56,33 @@ const Employee = props => {
           </a>
         </TableCell>
         <TableCell
-          style={{ cursor: "pointer" }}
         >
-          {props.employee.managerName === null ? null : (
-          <button className="btn btn-link" onClick={props.employeeManager}>{props.employee.managerName}</button>
-        )}
+          {props.employee.managerName === null 
+          ? 
+          null 
+          : 
+          <button 
+            className="btn btn-link" 
+            onClick={props.employeeManager} 
+            style={{ cursor: "pointer" }}
+          >
+            {props.employee.managerName}
+          </button>
+          }
         </TableCell>
-        <TableCell
-          style={{ cursor: "pointer" }}
-        >
-          {props.employee.directReports.length === 0 ? (
-            0
-          ) : (
-            <button className="btn btn-link" onClick={props.employeeReporters}>
-              {props.employee.directReports.length}
-            </button>
-          )}
+        <TableCell>
+          {props.employee.directReports.length === 0 
+          ? 
+          0
+          : 
+          <button 
+            className="btn btn-link" 
+            onClick={props.employeeReporters} 
+            style={{cursor: "pointer"}}
+          >
+            {props.employee.directReports.length}
+          </button>
+          }
         </TableCell>
 
         <TableCell>

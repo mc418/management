@@ -40,13 +40,12 @@ app.get("/api/employees?", (req, res) => {
 	const { page, orderBy, search } = req.query;
 	console.log(req.query);
 	const order = req.query.order === "asc" ? 1 : -1;
-	
 	let options = {
 		sort: {
 			[orderBy]: order
 		},
 		page: parseInt(page),
-		limit: 15
+		limit: 12
 	};
 
 	let query = {};

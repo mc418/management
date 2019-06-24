@@ -11,6 +11,9 @@ import TableRow from "@material-ui/core/TableRow";
 import { TableHead, TableSortLabel } from "@material-ui/core";
 import EnhancedInfiniteScroll from "./EnhancedInfiniteScroll";
 import Employee from "./Employee";
+import Button from '@material-ui/core/Button';
+import SearchIcon from '@material-ui/icons/Search';
+import InputBase from '@material-ui/core/InputBase';
 
 const StyledTableCell = withStyles(theme => ({
   body: {
@@ -27,6 +30,15 @@ const StyledTableRow = withStyles(theme => ({
   },
 }))(TableRow);
 
+const button_style = {
+  borderRadius: 3,
+  color: 'white',
+  height: 48,
+  padding: '0 30px',
+  margin: '0 10px',
+  background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+}
+
 class Home extends Component {
   constructor(props) {
     super(props);
@@ -35,8 +47,7 @@ class Home extends Component {
       orderBy: "null",
       input: "",
       pageStart: 0,
-      initialLoad: true,
-      page: 0
+      page: 1
     };
   }
 
@@ -44,23 +55,29 @@ class Home extends Component {
     this.setState({ 
       input: e.target.value,
       pageStart: this.state.pageStart === 0 ? -1 : 0,
-      initialLoad: true,
-      page: 0
-    });
-    this.props.onToReset();
-
+      page: 1
+    },
+    () => {
+      this.props.onToReset();
+      this.props.getEmployees(1, this.state.order, this.state.orderBy, this.state.input);
+      }
+    );
+    
   };
   
   handleReset = () => {
     this.setState({
       pageStart: this.state.pageStart === 0 ? -1 : 0,
-      initialLoad: true,
-      page: 0,
+      page: 1,
       input: "",
       order: "asc",
       orderBy: "null"
-    })
-    this.props.onToReset();// set reset to true
+    }, () => {
+      this.props.onToReset();
+      this.props.getEmployees(1, this.state.order, this.state.orderBy, this.state.input);
+    });
+    // set reset to true
+    
   }
 
   handleRequestSort = (sortBy) => {
@@ -70,11 +87,11 @@ class Home extends Component {
           order: order === "asc" ? "desc" : "asc",
           orderBy: sortBy,
           pageStart: this.state.pageStart === 0 ? -1 : 0,
-          initialLoad: true,
-          page: 0
+          page: 1
         },
         () => {
           this.props.onToReset();
+          this.props.getEmployees(1, this.state.order, this.state.orderBy, this.state.input);
         }
       );
   };
@@ -91,15 +108,14 @@ class Home extends Component {
       return new Promise(resolve => {
         resolve(this.setState({
           pageStart: this.state.pageStart === 0 ? -1 : 0,
-          initialLoad: true,
           page: 0
         }))
       })
     }
 
     async function SerialFlow() {
-      let res1 = await func1();
-      let res2 = await func2();
+      await func1();
+      await func2();
       return;
     }
     SerialFlow();    
@@ -108,207 +124,219 @@ class Home extends Component {
   loadItems = () => {
     let newPage = this.state.page + 1;
     this.setState({
-      initialLoad: false,
       page: newPage
-     }, 
-     () => {
-       this.props.getEmployees(this.state.page, this.state.order, this.state.orderBy, this.state.input)
-      })
+      }, 
+      () => {
+        if (!this.props.isLoading) {
+          this.props.getEmployees(this.state.page, this.state.order, this.state.orderBy, this.state.input)
+        }
+      }
+    )
+    console.log(1);
+  }
+
+  componentDidMount() {
+    this.props.getEmployees(1, this.state.order, this.state.orderBy, this.state.input)
+    console.log(2);
   }
 
   
   render() {
-    const { employees, 
+    const { 
+      employees, 
       employeesStatus, 
       getReporters, 
       getManager,
       hasMore
     } = this.props;
     
-    const { pageStart, initialLoad, order, orderBy } = this.state;
+    const { pageStart, order, orderBy } = this.state;
+
     return (
       <div>
         <h2>Employee Management System</h2>
         <div className="search">
-          <div className="field">
-          <form>
-              <div className="form-group">
-                <input
-                  className="form-control"
-                  type="search"
-                  id="search"
-                  placeholder="Search"
-                  aria-label="Search"
-                  value={this.state.input}
-                  onChange={this.handleInput}
-                />
-              </div>
-            </form>
+          <div style={{position: "relative", width: "80%", backgroundColor: "#ffffff"}}>
+            <SearchIcon style={{position: "absolute", display: "flex", alignItems: "center"}}/>
+            <InputBase
+              placeholder="Search…"
+              value={this.state.input}
+              onChange={this.handleInput}
+              style={{width: "100%", margin: "0 20px 0 40px"}}
+            />
           </div>
-          <div className="field">
-              <button type="button" className="homeBtn" onClick={this.handleReset}>Reset Filter</button>
-            </div>
-            <div className="field">
-              <Link to="/add">
-                  <button type="button" className="homeBtn">
-                      Add New Employee
-                  </button>
-              </Link>
-            </div>
+          <Button variant="contained" onClick={this.handleReset} style={button_style}>
+            Reset Filter
+          </Button>
+          <Link to="/add" style={{textDecoration: "none", color: "white"}}>
+            <Button variant="contained" style={button_style}>
+            Add New Employee
+            </Button>
+          </Link>
         </div>
        
         <EnhancedInfiniteScroll
           className="listWrap"
           pageStart={pageStart}
-          initialLoad={initialLoad}
+          initialLoad={false}
           loadMore={this.loadItems}
           hasMore={hasMore}
           threshold={200}
         >
-            <Table aria-labelledby="tableTitle">
-                <TableHead>
-                  <StyledTableRow>
+          <Table aria-labelledby="tableTitle">
+              <TableHead>
+                <StyledTableRow>
+                    <StyledTableCell
+                      style={{fontSize: "14px"}}
+                    >
+                      Avatar
+                    </StyledTableCell>
                       <StyledTableCell
                         style={{fontSize: "14px"}}
                       >
-                        Avatar
+                        <Tooltip
+                          title={"Sort"}
+                          placement={"bottom-end"}
+                          enterDelay={300}
+                        >
+                        <TableSortLabel
+                          active={orderBy === "name"}
+                          direction={order === "asc" ? "asc" : "desc"}
+                          onClick={() => this.handleRequestSort("name")}
+                        >
+                          Name
+                        </TableSortLabel>
+                        </Tooltip>
+                        
                       </StyledTableCell>
-                        <StyledTableCell
-                          style={{fontSize: "14px"}}
+                      <StyledTableCell
+                        style={{fontSize: "14px"}}
+                      >
+                        <Tooltip
+                          title={"Sort"}
+                          placement={"bottom-end"}
+                          enterDelay={300}
                         >
+                        <TableSortLabel
+                          active={orderBy === "title"}
+                          direction={order === "asc" ? "asc" : "desc"}
+                          onClick={() => this.handleRequestSort("title")}
+                        >
+                          Title
+                        </TableSortLabel>
+                        </Tooltip>
+                      </StyledTableCell>
+                      <StyledTableCell
+                        style={{fontSize: "14px"}}
+                      >
+                        <Tooltip
+                          title={"Sort"}
+                          placement={"bottom-end"}
+                          enterDelay={300}
+                        >
+                        <TableSortLabel
+                          active={orderBy === "sex"}
+                          direction={order === "asc" ? "asc" : "desc"}
+                          onClick={() => this.handleRequestSort("sex")}
+                        >
+                          Sex
+                        </TableSortLabel>
+                        </Tooltip>
+                        
+                      </StyledTableCell>
+                      <StyledTableCell
+                        style={{fontSize: "14px"}}
+                      >
                           <Tooltip
-                            title={"Sort"}
-                            placement={"bottom-end"}
-                            enterDelay={300}
-                          >
+                          title={"Sort"}
+                          placement={"bottom-end"}
+                          enterDelay={300}
+                        >
                           <TableSortLabel
-                            active={orderBy === "name"}
+                            active={orderBy === "startDate"}
                             direction={order === "asc" ? "asc" : "desc"}
-                            onClick={() => this.handleRequestSort("name")}
+                            onClick={() => this.handleRequestSort("startDate")}
                           >
-                            Name
+                            Start Date
                           </TableSortLabel>
-                          </Tooltip>
-                          
-                        </StyledTableCell>
-                        <StyledTableCell
-                          style={{fontSize: "14px"}}
+                        </Tooltip>
+                      </StyledTableCell>
+                      <StyledTableCell
+                        style={{fontSize: "14px"}}
+                      >
+                        Phone Number
+                      </StyledTableCell>
+                      <StyledTableCell
+                        style={{fontSize: "14px"}}
+                      >
+                          Email
+                      </StyledTableCell>
+                      <StyledTableCell
+                        style={{fontSize: "14px"}}
+                      >
+                        <Tooltip
+                          title={"Sort"}
+                          placement={"bottom-end"}
+                          enterDelay={300}
                         >
-                          <Tooltip
-                            title={"Sort"}
-                            placement={"bottom-end"}
-                            enterDelay={300}
-                          >
                           <TableSortLabel
-                            active={orderBy === "title"}
+                            active={orderBy === "managerName"}
                             direction={order === "asc" ? "asc" : "desc"}
-                            onClick={() => this.handleRequestSort("title")}
+                            onClick={() => this.handleRequestSort("managerName")}
                           >
-                            Title
+                            Manager
                           </TableSortLabel>
-                          </Tooltip>
-                        </StyledTableCell>
-                        <StyledTableCell
-                          style={{fontSize: "14px"}}
-                        >
-                          <Tooltip
-                            title={"Sort"}
-                            placement={"bottom-end"}
-                            enterDelay={300}
-                          >
-                          <TableSortLabel
-                            active={orderBy === "sex"}
-                            direction={order === "asc" ? "asc" : "desc"}
-                            onClick={() => this.handleRequestSort("sex")}
-                          >
-                            Sex
-                          </TableSortLabel>
-                          </Tooltip>
-                          
-                        </StyledTableCell>
-                        <StyledTableCell
-                          style={{fontSize: "14px"}}
-                        >
-                            <Tooltip
-                            title={"Sort"}
-                            placement={"bottom-end"}
-                            enterDelay={300}
-                          >
-                            <TableSortLabel
-                              active={orderBy === "startDate"}
-                              direction={order === "asc" ? "asc" : "desc"}
-                              onClick={() => this.handleRequestSort("startDate")}
-                            >
-                              Start Date
-                            </TableSortLabel>
-                          </Tooltip>
-                        </StyledTableCell>
-                        <StyledTableCell
-                          style={{fontSize: "14px"}}
-                        >
-                          Phone Number
-                        </StyledTableCell>
-                        <StyledTableCell
-                          style={{fontSize: "14px"}}
-                        >
-                            Email
-                        </StyledTableCell>
-                        <StyledTableCell
-                          style={{fontSize: "14px"}}
-                        >
-                         <Tooltip
-                            title={"Sort"}
-                            placement={"bottom-end"}
-                            enterDelay={300}
-                          >
-                            <TableSortLabel
-                              active={orderBy === "managerName"}
-                              direction={order === "asc" ? "asc" : "desc"}
-                              onClick={() => this.handleRequestSort("managerName")}
-                            >
-                              Manager
-                            </TableSortLabel>
-                          </Tooltip>
-                        </StyledTableCell>
-                        <StyledTableCell
-                          style={{fontSize: "14px"}}
-                        >
-                            # of Direct Reports
-                        </StyledTableCell>
-                        <StyledTableCell
-                          style={{fontSize: "14px"}}
-                        >
-                          Edit
-                        </StyledTableCell>
-                        <StyledTableCell
-                          style={{fontSize: "14px"}}
-                        >
-                          Delete
-                        </StyledTableCell>
-                  </StyledTableRow>
-                </TableHead>
-                <TableBody>
-                  {employees.map(employee => (
-                    <Employee
-                      key={employee._id}
-                      id={employee._id}
-                      employee={employee}
-                      employeeDelete={() => this.handleDelete(employee._id)}
-                      employeeReporters={() => getReporters(employee._id)}
-                      employeeManager={() => getManager(employee._id)}
-                    />
-                  ))}
-                </TableBody>
-            </Table>
+                        </Tooltip>
+                      </StyledTableCell>
+                      <StyledTableCell
+                        style={{fontSize: "14px"}}
+                      >
+                          # of Direct Reports
+                      </StyledTableCell>
+                      <StyledTableCell
+                        style={{fontSize: "14px"}}
+                      >
+                        Edit
+                      </StyledTableCell>
+                      <StyledTableCell
+                        style={{fontSize: "14px"}}
+                      >
+                        Delete
+                      </StyledTableCell>
+                </StyledTableRow>
+              </TableHead>
+              <TableBody>
+                {employees.map(employee => (
+                  <Employee
+                    key={employee._id}
+                    id={employee._id}
+                    employee={employee}
+                    employeeDelete={() => this.handleDelete(employee._id)}
+                    employeeReporters={() => getReporters(employee._id)}
+                    employeeManager={() => getManager(employee._id)}
+                  />
+                ))}
+              </TableBody>
+          </Table>
         </EnhancedInfiniteScroll>
         <div>
-          {employeesStatus === "start" && <div className="alert"> Loading... </div>}
+          {
+            employeesStatus === "start" 
+            && 
+            <div className="alert"> Loading... </div>
+          }
 
-          {!hasMore && employeesStatus !== "fail" &&
+          {
+            !hasMore && employeesStatus !== "fail" 
+            &&
             <div className="alert">Reached Bottom</div>
           }
-          {employeesStatus === "fail" && <div className="alert">Opps! There was an error loading the employees.</div>}
-          </div>
+          {
+            employeesStatus === "fail" 
+            && 
+            <div className="alert">Opps! There was an error loading the employees.</div>
+          }
+        </div>
       </div>
     );
   }
@@ -319,6 +347,7 @@ const mapStateToProps = state => {
     employees: state.employees,
     employeesStatus: state.employeesStatus,
     hasMore: state.hasMore,
+    isLoading: state.isLoading
   };
 };
 

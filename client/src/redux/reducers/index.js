@@ -3,7 +3,8 @@ const InitState = {
     employeesStatus: "",
     hasMore: true,
     validManagers:[],
-    error: null
+    error: null,
+    isLoading: false
   };
   
   const reducer = (state = InitState, action) => {
@@ -12,13 +13,15 @@ const InitState = {
         return { 
           ...state, 
           employeesStatus: 'fail', 
-          error: action.error
+          error: action.error,
+          isLoading: false
         };
       case "FETCH_EMPLOYEES_START":
         return { 
           ...state, 
           employeesStatus: 'start', 
           page: action.page, 
+          isLoading: true
         };
       case "FETCH_EMPLOYEES_SUCCESS":
         if(action.page === 1) {
@@ -26,14 +29,16 @@ const InitState = {
             ...state,
             employeesStatus: 'success',
             employees: action.employees,
-            hasMore: action.hasMore
+            hasMore: action.hasMore,
+            isLoading: false
           }
         } else {
           return { 
             ...state, 
             employeesStatus: 'success', 
             employees: [...state.employees,...action.employees], 
-            hasMore:action.hasMore
+            hasMore:action.hasMore,
+            isLoading: false
           };
         }
       case "EDIT_EMPLOYEE_START":
@@ -115,7 +120,8 @@ const InitState = {
         return { 
           ...state, 
           employees: [], 
-          hasMore:true
+          hasMore:true,
+          isLoading: false
         }
       case "FETCH_VALID_MANAGERS_START":
         return {

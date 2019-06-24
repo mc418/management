@@ -18,6 +18,4 @@ const employeeSchema = new Schema({
 
 employeeSchema.plugin(mongoosePaginate);
 
-let Employee = mongoose.model("User", employeeSchema);
-
-module.exports = Employee;
+module.exports = mongoose.model("User", employeeSchema);

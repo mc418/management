@@ -7,7 +7,6 @@ function getEmployeesStart() {
   };
 }
 
-
 function getEmployeesSuccess(page, response) {
   return {
     type: "FETCH_EMPLOYEES_SUCCESS",
@@ -144,7 +143,6 @@ export function deleteEmployee(id) {
       .delete(`http://localhost:8080/api/employee/${id}`)
       .then(response => {
         dispatch(deleteEmployeeSuccess(response));
-        console.log(1);
       })
       .catch(err => {
         dispatch(deleteEmployeeFail(err))
