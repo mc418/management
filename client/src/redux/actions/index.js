@@ -66,7 +66,6 @@ function addEmployeeFail(err) {
 
 export function addEmployee(employee, ownProps) {
   return (dispatch) => {
-    dispatch(reset());//empty the past data in employees store
     dispatch(addEmployeeStart());
     axios
       .post("http://localhost:8080/api/employee", employee)
@@ -102,7 +101,6 @@ function editEmployeeFail(err) {
 
 export function editEmployee(id, employee, ownProps) {
   return (dispatch) => {
-    dispatch(reset());//empty the past data in employees store
     dispatch(editEmployeeStart());
     axios
       .put(`http://localhost:8080/api/employee/${id}`, employee)
